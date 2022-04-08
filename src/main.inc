@@ -51,3 +51,5 @@
 	task_yield(%0)
 
 main() {} 
+
+#include <mysql>
