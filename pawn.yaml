@@ -2,7 +2,7 @@ site: ""
 user: tavenguyen
 repo: lswrp
 tag: 0.0.1
-entry: main.inc
+entry: src/main.inc
 output: gamemodes/main.amx
 dependencies:
     - pawn-lang/samp-stdlib
