@@ -6,9 +6,12 @@
 
 #include <a_mysql>
 #include <env>
-#include <YSI_Coding\y_hooks>
 
 static MySQL:lswvn_database = MySQL:MYSQL_INVALID_HANDLE;
+
+stock MySQL:MySQL_Connection() {
+    return lswvn_database;
+}
 
 public OnQueryError(errorid, const error[], const callback[], const query[], MySQL:handle) {
 	printf("ERR: Source - OnQueryError [errorid: %d]", errorid);
@@ -22,6 +25,7 @@ public OnQueryError(errorid, const error[], const callback[], const query[], MyS
 //  - sampctl p build
 //  - export MYSQL_HOST=localhost MYSQL_USER=root MYSQL_PASSWORD=root MYSQL_DATABASE=lswrp (if env doesn't have it.)
 //  - sampctl p run
+#include <YSI_Coding\y_hooks>
 hook OnGameModeInit() {
     new 
         bool:success = true,
