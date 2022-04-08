@@ -1,0 +1,9 @@
+site: ""
+user: tavenguyen
+repo: lswrp
+tag: 0.0.1
+entry: main.inc
+output: gamemodes/main.amx
+dependencies:
+    - pawn-lang/samp-stdlib
+local: true
