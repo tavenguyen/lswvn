@@ -6,4 +6,10 @@ entry: main.inc
 output: gamemodes/main.amx
 dependencies:
     - pawn-lang/samp-stdlib
+    - pawn-lang/YSI-Includes@5.x
+    - IllidanS4/PawnPlus:v1.4.0.1
+    - Y-LESS/sscanf:2.10.2-r2
+    - samp-incognito/samp-streamer-plugin:v2.9.5
+    - katursis/Pawn.CMD:3.3.3
+    - Sreyas-Sreelal/samp-bcrypt:0.3.4
 local: true
