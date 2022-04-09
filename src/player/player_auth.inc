@@ -86,6 +86,9 @@ hook OnPlayerConnect(playerid) {
     task_unblock(1);
     new id = await PlayerAuth_GetId(name);
     if(id == INVALID_PLAYER_AUTH) {
+        #if !defined enable_register_mode
+            Player_Kick(playerid, "May chu khong bat he thong dang ky trong game, vui long dang ky o trang chu.");
+        #endif
         printf("register");
     } else {
         printf("login");
