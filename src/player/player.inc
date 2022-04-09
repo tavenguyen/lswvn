@@ -9,4 +9,5 @@
 #include <a_mysql>
 #include <PawnPlus>
 
+#include "player_utility.inc"
 #include "player_auth.inc"
