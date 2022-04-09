@@ -8,6 +8,7 @@
 
 #include <a_mysql>
 #include <PawnPlus>
+#include <easyDialog>
 
 #include "player_utility.inc"
 #include "player_auth.inc"
