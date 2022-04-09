@@ -19,6 +19,15 @@ stock Task:PlayerAuth_Add(const name[], const password[]) {
     return t;
 }
 
+stock Task:PlayerAuth_Remove(id) {
+    new Task:t = task_new();
+
+    new query[];
+    mysql_format(MySQL_Connection(), query, sizeof(query), "DELETE FROM player_auth WHERE `id` = %d", id);
+    mysql_pquery(MySQL_Connection(), query, "PlayerAuth_OnRowRemove", "d", _:t);
+    return t;
+}
+
 stock Task:PlayerAuth_GetId(const name[]) {
     new Task:t = task_new();
 
@@ -30,6 +39,12 @@ stock Task:PlayerAuth_GetId(const name[]) {
 
 forward PlayerAuth_OnRowsAdd(Task:t);
 public PlayerAuth_OnRowsAdd(Task:t) {
+    task_set_result(t, cache_affected_rows());
+    return 1;
+}
+
+forward PlayerAuth_OnRowRemove(Task:t);
+public PlayerAuth_OnRowRemove(Task:t) {
     task_set_result(t, cache_affected_rows());
     return 1;
 }
@@ -56,11 +71,11 @@ hook OnGameModeInit() {
 	    modified_date TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP,\
         id INT UNSIGNED PRIMARY KEY AUTO_INCREMENT,\
         name VARCHAR(32) NOT NULL,\
-        password VARCHAR(64) DEFAULT '')\
+        password VARCHAR(64) DEFAULT '',\
+        UNIQUE player_auth_name(name))\
     ", true);
 
     printf("[player/player_auth] Loaded!");
-    PlayerAuth_Add("tavenguyen", "123");
     return 1;
 }
 
