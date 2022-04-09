@@ -80,6 +80,9 @@ hook OnGameModeInit() {
 }
 
 hook OnPlayerConnect(playerid) {
+    wait_ms(1);
+    Player_ClearChat(playerid);
+
     new name[MAX_PLAYER_NAME];
     GetPlayerName(playerid, name, sizeof(name));
 
@@ -89,7 +92,15 @@ hook OnPlayerConnect(playerid) {
         #if !defined enable_register_mode
             Player_Kick(playerid, "May chu khong bat he thong dang ky trong game, vui long dang ky o trang chu.");
         #endif
-        printf("register");
+
+        new description[250];
+        format(description, sizeof(description), 
+            "Xin chao '%s' den voi may chu cua chung toi!,\n\
+            hay nhap mat khau de tiep tuc qua trinh tao tai khoan:\n\n\
+            Gioi han mat khau: Tu 6 - %d ky tu.",
+        name, MAX_PASSWORD_LENGTH);
+
+        Dialog_Show(playerid, PlayerPasswordDialog, DIALOG_STYLE_PASSWORD, "Account Management", description, "Accept", "Close");
     } else {
         printf("login");
     }
