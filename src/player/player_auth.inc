@@ -10,6 +10,17 @@
 
 const INVALID_PLAYER_AUTH = -1;
 
+static PlayerAuth_ShowRegisteration(playerid, const name[]) {
+    new description[250];
+    format(description, sizeof(description), 
+        "Xin chao '%s' den voi may chu cua chung toi!,\n\
+        hay nhap mat khau de tiep tuc qua trinh tao tai khoan:\n\n\
+        Gioi han mat khau: Tu 6 - %d ky tu.",
+    name, MAX_PASSWORD_LENGTH);
+
+    Dialog_Show(playerid, PlayerPasswordDialog, DIALOG_STYLE_PASSWORD, "Account Management", description, "Accept", "Close");
+}
+
 stock Task:PlayerAuth_Add(const name[], const password[]) {
     new Task:t = task_new();
 
@@ -63,6 +74,11 @@ public PlayerAuth_OnIdGet(Task:t, const name[]) {
     return 1;
 }
 
+forward OnPasswordHashed(playerid);
+public OnPasswordHashed(playerid) {
+    return 1;
+}
+
 #include <YSI_Coding\y_hooks>
 hook OnGameModeInit() {
     mysql_query(MySQL_Connection(), 
@@ -93,16 +109,28 @@ hook OnPlayerConnect(playerid) {
             Player_Kick(playerid, "May chu khong bat he thong dang ky trong game, vui long dang ky o trang chu.");
         #endif
 
-        new description[250];
-        format(description, sizeof(description), 
-            "Xin chao '%s' den voi may chu cua chung toi!,\n\
-            hay nhap mat khau de tiep tuc qua trinh tao tai khoan:\n\n\
-            Gioi han mat khau: Tu 6 - %d ky tu.",
-        name, MAX_PASSWORD_LENGTH);
-
-        Dialog_Show(playerid, PlayerPasswordDialog, DIALOG_STYLE_PASSWORD, "Account Management", description, "Accept", "Close");
+        PlayerAuth_ShowRegisteration(playerid, name);       
     } else {
         printf("login");
+    }
+    return 1;
+}
+
+Dialog:PlayerPasswordDialog(playerid, response, listitem, inputtext[]) {
+    if(response) {
+        new name[MAX_PLAYER_NAME];
+        GetPlayerName(playerid, name, sizeof(name));
+
+        if(isnull(inputtext) || strlen(inputtext) < 6 || strlen(inputtext) > MAX_PASSWORD_LENGTH) {
+            SendClientMessage(playerid, -1, "Mat khau khong hop le, vui long thu lai.");
+            PlayerAuth_ShowRegisteration(playerid, name);
+            return 1;
+        }
+
+        // Hashing password
+        bcrypt_hash(playerid, "OnPasswordHashed", inputtext, BCRYPT_COST);
+    } else {
+        Player_Kick(playerid, "Ban da huy qua trinh dang ky tai khoan trong may chu, may chu se tu dong da ban ra khoi he thong.");
     }
     return 1;
 }
