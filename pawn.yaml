@@ -14,6 +14,7 @@ dependencies:
     - Sreyas-Sreelal/samp-bcrypt:0.3.4
     - dakyskye/pawn-env:1.1.1
     - pBlueG/SA-MP-MySQL:R41-4
+    - Awsomedude/easyDialog
 local: true
 runtime:
     version: 0.3.DL-R1
