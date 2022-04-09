@@ -24,7 +24,7 @@ static PlayerAuth_ShowRegisteration(playerid, const name[]) {
 stock Task:PlayerAuth_Add(const name[], const password[]) {
     new Task:t = task_new();
 
-    new query[60 + MAX_PLAYER_NAME + MAX_PASSWORD_LENGTH - 8 + 1];
+    new query[60 + MAX_PLAYER_NAME + BCRYPT_HASH_LENGTH - 8 + 1];
     mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO player_auth (name, password) VALUES ('%e', '%e')", name, password);
     mysql_pquery(MySQL_Connection(), query, "PlayerAuth_OnRowsAdd", "d", _:t);
     return t;
@@ -74,8 +74,18 @@ public PlayerAuth_OnIdGet(Task:t, const name[]) {
     return 1;
 }
 
-forward OnPasswordHashed(playerid);
-public OnPasswordHashed(playerid) {
+forward OnPasswordHashed(playerid, const name[]);
+public OnPasswordHashed(playerid, const name[]) {
+    new result[BCRYPT_HASH_LENGTH];
+    bcrypt_get_hash(result);
+
+    task_unblock(1);
+    new success = await PlayerAuth_Add(name, result);
+    if(success) {
+        SendClientMessage(playerid, -1, "Tai khoan cua ban da tao thanh cong!");
+    } else {
+        Player_Kick(playerid, "Tai khoan xay ra van de, vui long dang nhap va thu lai.");
+    }
     return 1;
 }
 
@@ -128,7 +138,7 @@ Dialog:PlayerPasswordDialog(playerid, response, listitem, inputtext[]) {
         }
 
         // Hashing password
-        bcrypt_hash(playerid, "OnPasswordHashed", inputtext, BCRYPT_COST);
+        bcrypt_hash(playerid, "OnPasswordHashed", inputtext, BCRYPT_COST, "s", name);
     } else {
         Player_Kick(playerid, "Ban da huy qua trinh dang ky tai khoan trong may chu, may chu se tu dong da ban ra khoi he thong.");
     }

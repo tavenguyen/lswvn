@@ -9,6 +9,7 @@
 #include <a_mysql>
 #include <PawnPlus>
 #include <easyDialog>
+#include <samp_bcrypt>
 
 #include "player_utility.inc"
 #include "player_auth.inc"
