@@ -5,9 +5,19 @@
 #define player_auth_included
 
 #undef MAX_PLAYER_NAME
-#define             MAX_PLAYER_NAME                 32
+#define             MAX_PLAYER_NAME                     32
+#define             MAX_PASSWORD_LENGTH                 32
 
 const INVALID_PLAYER_AUTH = -1;
+
+stock Task:PlayerAuth_Add(const name[], const password[]) {
+    new Task:t = task_new();
+
+    new query[60 + MAX_PLAYER_NAME + MAX_PASSWORD_LENGTH - 8 + 1];
+    mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO player_auth (name, password) VALUES ('%e', '%e')", name, password);
+    mysql_pquery(MySQL_Connection(), query, "PlayerAuth_OnRowsAdd", "d", _:t);
+    return t;
+}
 
 stock Task:PlayerAuth_GetId(const name[]) {
     new Task:t = task_new();
@@ -16,6 +26,12 @@ stock Task:PlayerAuth_GetId(const name[]) {
     mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT `id` FROM player_auth WHERE name = '%e' LIMIT 1", name);
     mysql_pquery(MySQL_Connection(), query, "PlayerAuth_OnIdGet", "ds", _:t, name);
     return t;
+}
+
+forward PlayerAuth_OnRowsAdd(Task:t);
+public PlayerAuth_OnRowsAdd(Task:t) {
+    task_set_result(t, cache_affected_rows());
+    return 1;
 }
 
 forward PlayerAuth_OnIdGet(Task:t, const name[]);
@@ -44,6 +60,7 @@ hook OnGameModeInit() {
     ", true);
 
     printf("[player/player_auth] Loaded!");
+    PlayerAuth_Add("tavenguyen", "123");
     return 1;
 }
 
@@ -53,5 +70,10 @@ hook OnPlayerConnect(playerid) {
 
     task_unblock(1);
     new id = await PlayerAuth_GetId(name);
+    if(id == INVALID_PLAYER_AUTH) {
+        printf("register");
+    } else {
+        printf("login");
+    }
     return 1;
 }
