@@ -4,6 +4,9 @@
 
 #define player_auth_included
 
+#undef MAX_PLAYER_NAME
+#define             MAX_PLAYER_NAME                 32
+
 #include <YSI_Coding\y_hooks>
 hook OnGameModeInit() {
     mysql_query(MySQL_Connection(), 
