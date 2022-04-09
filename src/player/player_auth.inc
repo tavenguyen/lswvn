@@ -37,16 +37,6 @@ stock Task:PlayerAuth_GetId(const name[]) {
     return t;
 }
 
-stock PlayerAuth_Valid(const name[]) {
-    task_unblock(1);
-    new id = await PlayerAuth_GetId(name);
-    if(id == INVALID_PLAYER_AUTH) {
-        return 0;
-    }
-
-    return 1;
-}
-
 forward PlayerAuth_OnRowsAdd(Task:t);
 public PlayerAuth_OnRowsAdd(Task:t) {
     task_set_result(t, cache_affected_rows());
@@ -93,7 +83,9 @@ hook OnPlayerConnect(playerid) {
     new name[MAX_PLAYER_NAME];
     GetPlayerName(playerid, name, sizeof(name));
 
-    if(!PlayerAuth_Valid(name)) {
+    task_unblock(1);
+    new id = await PlayerAuth_GetId(name);
+    if(id == INVALID_PLAYER_AUTH) {
         printf("register");
     } else {
         printf("login");
