@@ -11,3 +11,11 @@ stock Player_Kick(playerid, const msg[]) {
     Kick(playerid);
     return 1;
 }
+
+stock Player_ClearChat(playerid) {
+    new i = 0;
+    while(i++ < 50) {
+        SendClientMessage(playerid, -1, "");
+    } 
+    return 1;
+}
