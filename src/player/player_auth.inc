@@ -93,20 +93,22 @@ public PlayerAuth_OnIdGet(Task:t, const name[]) {
 forward PlayerAuth_OnHashGet(Task:t);
 public PlayerAuth_OnHashGet(Task:t) {
     if(cache_num_rows() > 0) {
-        new hash[BCRYPT_HASH_LENGTH + 1];
+        new hash[BCRYPT_HASH_LENGTH];
         cache_get_value_name(0, "password", hash);
         task_set_result_str(t, hash);
         return 1;
     }
     
-    task_set_result(t, "");
     return 1;
 }
 
-forward OnPasswordHashed(playerid, const name[]);
-public OnPasswordHashed(playerid, const name[]) {
+forward OnPasswordHashed(playerid);
+public OnPasswordHashed(playerid) {
     new result[BCRYPT_HASH_LENGTH];
     bcrypt_get_hash(result);
+
+    new name[MAX_PLAYER_NAME];
+    GetPlayerName(playerid, name, sizeof(name));
 
     new process = map_get(m_playerAuthProcess, playerid);
     if(process == PLAYER_AUTH_REGISTERATION) {
@@ -114,6 +116,7 @@ public OnPasswordHashed(playerid, const name[]) {
         new success = await PlayerAuth_Add(name, result);
         if(success) {
             Player_Msg(playerid, -1, "Tai khoan cua ban da tao thanh cong!");
+            Dialog_Show(playerid, PlayerLoginDialog, DIALOG_STYLE_PASSWORD, "Account Login", "Hay nhap mat khau cua ban vao day de tham gia vao may chu: ", "Accept", "Close");
         } else {
             Player_Kick(playerid, "Tai khoan xay ra van de, vui long dang nhap va thu lai.");
         }
@@ -123,8 +126,16 @@ public OnPasswordHashed(playerid, const name[]) {
             map_delete(m_playerAuthProcess);
             m_playerAuthProcess = Map:0;
         }
+    }
+    return 1;
+}
+
+forward OnPasswordVerify(playerid, bool:success);
+public OnPasswordVerify(playerid, bool:success) {
+    if(success) {
+        printf("vao game di em");
     } else {
-        bcrypt_verify(playerid, "OnPasswordVerify", "test", result);
+        Player_Kick(playerid, "Sai mat khau may!");
     }
     return 1;
 }
@@ -163,9 +174,20 @@ hook OnPlayerConnect(playerid) {
         PlayerAuth_ShowRegisteration(playerid, name);       
     } else {
         #if !defined player_auth_ui_included
-            Dialog_Show(playerid, PlayerLoginDialog, DIALOG_STYLE_INPUT, "Account Login", "Hay nhap mat khau cua ban vao day de tham gia vao may chu: ", "Accept", "Close");
+            Dialog_Show(playerid, PlayerLoginDialog, DIALOG_STYLE_PASSWORD, "Account Login", "Hay nhap mat khau cua ban vao day de tham gia vao may chu: ", "Accept", "Close");
         #endif
     }
+    return 1;
+}
+
+hook OnPlayerDisconnect(playerid, reason) {
+    if(map_valid(m_playerAuthProcess) && map_has_key(m_playerAuthProcess, playerid)) {
+        map_remove(m_playerAuthProcess, playerid);
+        if(!map_size(m_playerAuthProcess)) {
+            map_delete(m_playerAuthProcess);
+            m_playerAuthProcess = Map:0;
+        }
+    } 
     return 1;
 }
 
@@ -186,7 +208,7 @@ Dialog:PlayerPasswordDialog(playerid, response, listitem, inputtext[]) {
 
         // Hashing password
         map_set(m_playerAuthProcess, playerid, PLAYER_AUTH_REGISTERATION);
-        bcrypt_hash(playerid, "OnPasswordHashed", inputtext, BCRYPT_COST, "s", name);
+        bcrypt_hash(playerid, "OnPasswordHashed", inputtext, BCRYPT_COST);
     } else {
         Player_Kick(playerid, "Ban da huy qua trinh dang ky tai khoan trong may chu, may chu se tu dong da ban ra khoi he thong.");
     }
@@ -195,12 +217,25 @@ Dialog:PlayerPasswordDialog(playerid, response, listitem, inputtext[]) {
 
 Dialog:PlayerLoginDialog(playerid, response, listitem, inputtext[]) {
     if(response) {
+        new name[MAX_PLAYER_NAME];
+        GetPlayerName(playerid, name, sizeof(name));
+
         if(!map_valid(m_playerAuthProcess)) {
             m_playerAuthProcess = map_new();
         }
 
         map_set(m_playerAuthProcess, playerid, PLAYER_AUTH_LOGIN);
-        bcrypt_hash(playerid, "OnPasswordHashed", inputtext, BCRYPT_COST);
+        new hash[BCRYPT_HASH_LENGTH],
+            Task:t = PlayerAuth_GetHash(name),
+            Guard:guard = pawn_guard(t);
+        
+        if(task_valid(t)) {
+            await t;
+            task_get_result_arr(t, hash);
+            if(pawn_guard_valid(guard)) pawn_guard_free(guard);
+
+            bcrypt_verify(playerid, "OnPasswordVerify", inputtext, hash);
+        }
     } else {
         Player_Kick(playerid, "Ban da huy bo qua trinh dang nhap tai khoan, may chu se tu dong da ban ra khoi day.");
     }
