@@ -55,6 +55,15 @@ stock Task:PlayerAuth_GetId(const name[]) {
     return t;
 }
 
+stock Task:PlayerAuth_GetHash(const name[]) {
+    new Task:t = task_new();
+
+    new query[60 + BCRYPT_HASH_LENGTH - 2 + 1];
+    mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT `password` FROM player_auth WHERE name = '%e' LIMIT 1", name);
+    mysql_pquery(MySQL_Connection(), query, "PlayerAuth_OnHashGet", "d", _:t);
+    return t;
+}
+
 forward PlayerAuth_OnRowsAdd(Task:t);
 public PlayerAuth_OnRowsAdd(Task:t) {
     task_set_result(t, cache_affected_rows());
@@ -78,6 +87,19 @@ public PlayerAuth_OnIdGet(Task:t, const name[]) {
     }
 
     task_set_result(t, INVALID_PLAYER_AUTH);
+    return 1;
+}
+
+forward PlayerAuth_OnHashGet(Task:t);
+public PlayerAuth_OnHashGet(Task:t) {
+    if(cache_num_rows() > 0) {
+        new hash[BCRYPT_HASH_LENGTH + 1];
+        cache_get_value_name(0, "password", hash);
+        task_set_result_str(t, hash);
+        return 1;
+    }
+    
+    task_set_result(t, "");
     return 1;
 }
 
