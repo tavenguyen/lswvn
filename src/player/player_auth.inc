@@ -10,6 +10,13 @@
 
 const INVALID_PLAYER_AUTH = -1;
 
+static Map:m_playerAuthProcess;
+
+static enum {
+    PLAYER_AUTH_REGISTERATION,
+    PLAYER_AUTH_LOGIN
+}
+
 static PlayerAuth_ShowRegisteration(playerid, const name[]) {
     new description[250];
     format(description, sizeof(description), 
@@ -79,18 +86,30 @@ public OnPasswordHashed(playerid, const name[]) {
     new result[BCRYPT_HASH_LENGTH];
     bcrypt_get_hash(result);
 
-    task_unblock(1);
-    new success = await PlayerAuth_Add(name, result);
-    if(success) {
-        Player_Msg(playerid, -1, "Tai khoan cua ban da tao thanh cong!");
+    new process = map_get(m_playerAuthProcess, playerid);
+    if(process == PLAYER_AUTH_REGISTERATION) {
+        task_unblock(1);
+        new success = await PlayerAuth_Add(name, result);
+        if(success) {
+            Player_Msg(playerid, -1, "Tai khoan cua ban da tao thanh cong!");
+        } else {
+            Player_Kick(playerid, "Tai khoan xay ra van de, vui long dang nhap va thu lai.");
+        }
+
+        map_remove(m_playerAuthProcess, playerid);
+        if(!map_size(m_playerAuthProcess)) {
+            map_delete(m_playerAuthProcess);
+            m_playerAuthProcess = Map:0;
+        }
     } else {
-        Player_Kick(playerid, "Tai khoan xay ra van de, vui long dang nhap va thu lai.");
+        bcrypt_verify(playerid, "OnPasswordVerify", "test", result);
     }
     return 1;
 }
 
 #include <YSI_Coding\y_hooks>
 hook OnGameModeInit() {
+    m_playerAuthProcess = map_new();
     mysql_query(MySQL_Connection(), 
         "CREATE TABLE IF NOT EXISTS player_auth (\
         created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\
@@ -121,7 +140,9 @@ hook OnPlayerConnect(playerid) {
 
         PlayerAuth_ShowRegisteration(playerid, name);       
     } else {
-        printf("login");
+        #if !defined player_auth_ui_included
+            Dialog_Show(playerid, PlayerLoginDialog, DIALOG_STYLE_INPUT, "Account Login", "Hay nhap mat khau cua ban vao day de tham gia vao may chu: ", "Accept", "Close");
+        #endif
     }
     return 1;
 }
@@ -137,10 +158,29 @@ Dialog:PlayerPasswordDialog(playerid, response, listitem, inputtext[]) {
             return 1;
         }
 
+        if(!map_valid(m_playerAuthProcess)) {
+            m_playerAuthProcess = map_new();
+        }
+
         // Hashing password
+        map_set(m_playerAuthProcess, playerid, PLAYER_AUTH_REGISTERATION);
         bcrypt_hash(playerid, "OnPasswordHashed", inputtext, BCRYPT_COST, "s", name);
     } else {
         Player_Kick(playerid, "Ban da huy qua trinh dang ky tai khoan trong may chu, may chu se tu dong da ban ra khoi he thong.");
+    }
+    return 1;
+}
+
+Dialog:PlayerLoginDialog(playerid, response, listitem, inputtext[]) {
+    if(response) {
+        if(!map_valid(m_playerAuthProcess)) {
+            m_playerAuthProcess = map_new();
+        }
+
+        map_set(m_playerAuthProcess, playerid, PLAYER_AUTH_LOGIN);
+        bcrypt_hash(playerid, "OnPasswordHashed", inputtext, BCRYPT_COST);
+    } else {
+        Player_Kick(playerid, "Ban da huy bo qua trinh dang nhap tai khoan, may chu se tu dong da ban ra khoi day.");
     }
     return 1;
 }
