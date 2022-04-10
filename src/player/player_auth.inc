@@ -141,7 +141,9 @@ public OnPasswordVerify(playerid, bool:success) {
             map_set(m_playerLoginSuccess, playerid, PLAYER_AUTH_LOGIN_SUCCESS);
         #endif
 
-        printf("do game di thang cu");
+        #if !defined player_auth_ui_included
+            printf("vo game bang dialog ne");
+        #endif
     } else {
         #if !defined player_auth_ui_included
             Player_Kick(playerid, "[server] Kicked automatically because password was wrong.");
