@@ -15,6 +15,7 @@ dependencies:
     - dakyskye/pawn-env:1.1.1
     - pBlueG/SA-MP-MySQL:R41-4
     - Awsomedude/easyDialog
+    - Open-GTO/zmessage
 local: true
 runtime:
     version: 0.3.DL-R1
