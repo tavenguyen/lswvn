@@ -12,5 +12,6 @@
 #include <samp_bcrypt>
 #include <zmessage>
 
+#include "ui/player_login_ui.inc"
 #include "player_utility.inc"
 #include "player_auth.inc"

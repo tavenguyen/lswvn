@@ -133,9 +133,25 @@ public OnPasswordHashed(playerid) {
 forward OnPasswordVerify(playerid, bool:success);
 public OnPasswordVerify(playerid, bool:success) {
     if(success) {
-        printf("vao game di em");
+        #if defined player_auth_ui_included
+            if(!map_valid(m_playerLoginSuccess)) {
+                m_playerLoginSuccess = map_new();
+            }
+
+            map_set(m_playerLoginSuccess, playerid, PLAYER_AUTH_LOGIN_SUCCESS);
+        #endif
+
+        printf("do game di thang cu");
     } else {
-        Player_Kick(playerid, "Sai mat khau may!");
+        #if !defined player_auth_ui_included
+            Player_Kick(playerid, "[server] Kicked automatically because password was wrong.");
+        #else 
+            if(!map_valid(m_playerLoginSuccess)) {
+                m_playerLoginSuccess = map_new();
+            }
+
+            map_set(m_playerLoginSuccess, playerid, PLAYER_AUTH_LOGIN_UNSUCCESS);
+        #endif
     }
     return 1;
 }
@@ -175,6 +191,10 @@ hook OnPlayerConnect(playerid) {
     } else {
         #if !defined player_auth_ui_included
             Dialog_Show(playerid, PlayerLoginDialog, DIALOG_STYLE_PASSWORD, "Account Login", "Hay nhap mat khau cua ban vao day de tham gia vao may chu: ", "Accept", "Close");
+        #endif
+
+        #if defined player_auth_ui_included
+            PlayerLogin_ShowUI(playerid);
         #endif
     }
     return 1;
@@ -225,6 +245,8 @@ Dialog:PlayerLoginDialog(playerid, response, listitem, inputtext[]) {
         }
 
         map_set(m_playerAuthProcess, playerid, PLAYER_AUTH_LOGIN);
+        Player_Msg(playerid, -1, "Ban da nhap mat khau thanh cong");
+
         new hash[BCRYPT_HASH_LENGTH],
             Task:t = PlayerAuth_GetHash(name),
             Guard:guard = pawn_guard(t);
@@ -237,7 +259,9 @@ Dialog:PlayerLoginDialog(playerid, response, listitem, inputtext[]) {
             bcrypt_verify(playerid, "OnPasswordVerify", inputtext, hash);
         }
     } else {
-        Player_Kick(playerid, "Ban da huy bo qua trinh dang nhap tai khoan, may chu se tu dong da ban ra khoi day.");
+        #if !defined player_auth_ui_included
+            Player_Kick(playerid, "Ban da huy bo qua trinh dang nhap tai khoan, may chu se tu dong da ban ra khoi day.");
+        #endif
     }
     return 1;
 }
