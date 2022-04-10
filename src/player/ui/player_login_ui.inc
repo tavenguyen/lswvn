@@ -177,6 +177,17 @@ hook OnGameModeInit() {
 	return 1;
 }
 
+hook OnPlayerDisconnect(playerid) {
+    if(map_valid(m_playerLoginSuccess) && map_has_key(m_playerLoginSuccess, playerid)) {
+        map_remove(m_playerLoginSuccess, playerid);
+        if(!map_size(m_playerLoginSuccess)) {
+            map_delete(m_playerLoginSuccess);
+            m_playerLoginSuccess = Map:0;
+        }
+    } 
+    return 1;
+}
+
 hook OnPlayerClickPlayerTD(playerid, PlayerText:playertextid) {
 	if(playertextid == LoginUI[playerid][13]) {
 		Dialog_Show(playerid, PlayerLoginDialog, DIALOG_STYLE_PASSWORD, "Account Login", "Hay nhap mat khau cua ban vao day de tham gia vao may chu: ", "Accept", "Close");
