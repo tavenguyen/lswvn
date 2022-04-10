@@ -10,6 +10,7 @@
 #include <PawnPlus>
 #include <easyDialog>
 #include <samp_bcrypt>
+#include <zmessage>
 
 #include "player_utility.inc"
 #include "player_auth.inc"

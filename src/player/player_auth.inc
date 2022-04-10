@@ -82,7 +82,7 @@ public OnPasswordHashed(playerid, const name[]) {
     task_unblock(1);
     new success = await PlayerAuth_Add(name, result);
     if(success) {
-        SendClientMessage(playerid, -1, "Tai khoan cua ban da tao thanh cong!");
+        Player_Msg(playerid, -1, "Tai khoan cua ban da tao thanh cong!");
     } else {
         Player_Kick(playerid, "Tai khoan xay ra van de, vui long dang nhap va thu lai.");
     }
@@ -132,7 +132,7 @@ Dialog:PlayerPasswordDialog(playerid, response, listitem, inputtext[]) {
         GetPlayerName(playerid, name, sizeof(name));
 
         if(isnull(inputtext) || strlen(inputtext) < 6 || strlen(inputtext) > MAX_PASSWORD_LENGTH) {
-            SendClientMessage(playerid, -1, "Mat khau khong hop le, vui long thu lai.");
+            Player_Msg(playerid, -1, "Mat khau khong hop le, vui long thu lai.");
             PlayerAuth_ShowRegisteration(playerid, name);
             return 1;
         }
