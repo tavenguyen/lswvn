@@ -171,6 +171,17 @@ stock PlayerLogin_ShowUI(playerid) {
 	return true;
 }
 
+stock PlayerLogin_HideUI(playerid) {
+    for(new i = 0; i < PLAYER_LOGIN_UI_MAX; i++) {
+        PlayerTextDrawHide(playerid, LoginUI[playerid][i]);
+        PlayerTextDrawDestroy(playerid, LoginUI[playerid][i]);
+        LoginUI[playerid][i] = PlayerText:INVALID_PLAYER_TEXT_DRAW;
+    }
+
+    CancelSelectTextDraw(playerid);
+    return 1;
+}
+
 #include <YSI_Coding\y_hooks>
 hook OnGameModeInit() {
 	m_playerLoginSuccess = map_new();
@@ -197,7 +208,7 @@ hook OnPlayerClickPlayerTD(playerid, PlayerText:playertextid) {
 		if(map_valid(m_playerLoginSuccess) && map_has_key(m_playerLoginSuccess, playerid)) {
 			new success = map_get(m_playerLoginSuccess, playerid);
 			if(success == PLAYER_AUTH_LOGIN_SUCCESS) {
-				printf("do game di thang cu");
+				CallLocalFunction("Player_OnCharRetrived", "i", playerid);
 
 				map_remove(m_playerLoginSuccess, playerid);
 				if(!map_size(m_playerLoginSuccess)) {
