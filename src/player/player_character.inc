@@ -20,3 +20,9 @@ hook OnGameModeInit() {
     printf("[player/player_account] Loaded!");
     return 1;
 }
+
+hook Player_OnCharRetrived(playerid) {
+    Player_SpawnOnSelCharacterArea(playerid);
+    PlayerLogin_HideUI(playerid);
+    return 1;
+}

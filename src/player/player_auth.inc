@@ -116,7 +116,12 @@ public OnPasswordHashed(playerid) {
         new success = await PlayerAuth_Add(name, result);
         if(success) {
             Player_Msg(playerid, -1, "Tai khoan cua ban da tao thanh cong!");
-            Dialog_Show(playerid, PlayerLoginDialog, DIALOG_STYLE_PASSWORD, "Account Login", "Hay nhap mat khau cua ban vao day de tham gia vao may chu: ", "Accept", "Close");
+
+            #if !defined player_auth_ui_included
+                Dialog_Show(playerid, PlayerLoginDialog, DIALOG_STYLE_PASSWORD, "Account Login", "Hay nhap mat khau cua ban vao day de tham gia vao may chu: ", "Accept", "Close");
+            #endif
+
+            PlayerLogin_ShowUI(playerid);
         } else {
             Player_Kick(playerid, "Tai khoan xay ra van de, vui long dang nhap va thu lai.");
         }
@@ -142,7 +147,7 @@ public OnPasswordVerify(playerid, bool:success) {
         #endif
 
         #if !defined player_auth_ui_included
-            printf("vo game bang dialog ne");
+            CallLocalFunction("Player_OnCharRetrived", "i", playerid);
         #endif
     } else {
         #if !defined player_auth_ui_included
@@ -178,6 +183,7 @@ hook OnGameModeInit() {
 hook OnPlayerConnect(playerid) {
     wait_ms(1);
     Player_ClearChat(playerid);
+    TogglePlayerSpectating(playerid, true);
 
     new name[MAX_PLAYER_NAME];
     GetPlayerName(playerid, name, sizeof(name));
