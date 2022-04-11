@@ -53,4 +53,6 @@
 main() {} 
 
 #include <mysql>
+#include <map>
 #include <player>
+#include <admin>

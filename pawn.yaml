@@ -67,6 +67,9 @@ build:
     compiler:
         version: 3.10.10
     includes:
+        - legacy
+        - src/map
         - src/mysql
         - src/player
+        - src/admin
         
