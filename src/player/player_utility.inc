@@ -29,9 +29,10 @@ stock Player_SpawnOnSelCharacterArea(playerid) {
     TogglePlayerSpectating(playerid, false);
 	SetSpawnInfo(playerid, 0, 27, 5.0, 5.0, 5.0, 0.0, 0, 0, 0, 0, 0, 0);
 	SpawnPlayer(playerid);
+    TogglePlayerControllable(playerid, false);
 	SetPlayerVirtualWorld(playerid, 0);
 	SetPlayerInterior(playerid, 0);
+    await SetCameraStyle(playerid);
 	TogglePlayerControllable(playerid, true);
-	SetCameraBehindPlayer(playerid);
     return 1;
 }

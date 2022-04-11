@@ -22,7 +22,7 @@ hook OnGameModeInit() {
 }
 
 hook Player_OnCharRetrived(playerid) {
-    Player_SpawnOnSelCharacterArea(playerid);
     PlayerLogin_HideUI(playerid);
+    Player_SpawnOnSelCharacterArea(playerid);
     return 1;
 }

@@ -12,6 +12,9 @@
 #include <samp_bcrypt>
 #include <zmessage>
 
+// Legacy
+#include <camera_styles>
+
 #include "ui/player_login_ui.inc"
 #include "player_utility.inc"
 #include "player_auth.inc"
