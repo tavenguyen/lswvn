@@ -33,16 +33,16 @@ stock Task:PlayerAuth_Add(const name[], const password[]) {
 
     new query[60 + MAX_PLAYER_NAME + BCRYPT_HASH_LENGTH - 8 + 1];
     mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO player_auth (name, password) VALUES ('%e', '%e')", name, password);
-    mysql_pquery(MySQL_Connection(), query, "PlayerAuth_OnRowsAdd", "d", _:t);
+    mysql_pquery(MySQL_Connection(), query, #PlayerAuth_OnRowsAdd, #d, _:t);
     return t;
 }
 
 stock Task:PlayerAuth_Remove(id) {
     new Task:t = task_new();
 
-    new query[];
+    new query[40 + 11 - 2 + 1];
     mysql_format(MySQL_Connection(), query, sizeof(query), "DELETE FROM player_auth WHERE `id` = %d", id);
-    mysql_pquery(MySQL_Connection(), query, "PlayerAuth_OnRowRemove", "d", _:t);
+    mysql_pquery(MySQL_Connection(), query, #PlayerAuth_OnRowRemove, #d, _:t);
     return t;
 }
 
@@ -51,7 +51,7 @@ stock Task:PlayerAuth_GetId(const name[]) {
 
     new query[54 + MAX_PLAYER_NAME - 2 + 1];
     mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT `id` FROM player_auth WHERE name = '%e' LIMIT 1", name);
-    mysql_pquery(MySQL_Connection(), query, "PlayerAuth_OnIdGet", "ds", _:t, name);
+    mysql_pquery(MySQL_Connection(), query, #PlayerAuth_OnIdGet, #ds, _:t, name);
     return t;
 }
 
@@ -60,7 +60,7 @@ stock Task:PlayerAuth_GetHash(const name[]) {
 
     new query[60 + BCRYPT_HASH_LENGTH - 2 + 1];
     mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT `password` FROM player_auth WHERE name = '%e' LIMIT 1", name);
-    mysql_pquery(MySQL_Connection(), query, "PlayerAuth_OnHashGet", "d", _:t);
+    mysql_pquery(MySQL_Connection(), query, #PlayerAuth_OnHashGet, #d, _:t);
     return t;
 }
 
@@ -81,7 +81,7 @@ public PlayerAuth_OnIdGet(Task:t, const name[]) {
     printf("[player/player_auth - mysql debugging] %d mil - %d microsec - player : %s", cache_get_query_exec_time(MILLISECONDS), cache_get_query_exec_time(), name);
     if(cache_num_rows() > 0) {
         new id;
-        cache_get_value_name_int(0, "id", id);
+        cache_get_value_name_int(0, #id, id);
         task_set_result(t, id);
         return 1;
     }
@@ -94,7 +94,7 @@ forward PlayerAuth_OnHashGet(Task:t);
 public PlayerAuth_OnHashGet(Task:t) {
     if(cache_num_rows() > 0) {
         new hash[BCRYPT_HASH_LENGTH];
-        cache_get_value_name(0, "password", hash);
+        cache_get_value_name(0, #password, hash);
         task_set_result_str(t, hash);
         return 1;
     }
@@ -147,7 +147,7 @@ public OnPasswordVerify(playerid, bool:success) {
         #endif
 
         #if !defined player_auth_ui_included
-            CallLocalFunction("Player_OnCharRetrived", "i", playerid);
+            CallLocalFunction(#Player_OnCharRetrived, #i, playerid);
         #endif
     } else {
         #if !defined player_auth_ui_included
@@ -236,7 +236,7 @@ Dialog:PlayerPasswordDialog(playerid, response, listitem, inputtext[]) {
 
         // Hashing password
         map_set(m_playerAuthProcess, playerid, PLAYER_AUTH_REGISTERATION);
-        bcrypt_hash(playerid, "OnPasswordHashed", inputtext, BCRYPT_COST);
+        bcrypt_hash(playerid, #OnPasswordHashed, inputtext, BCRYPT_COST);
     } else {
         Player_Kick(playerid, "Ban da huy qua trinh dang ky tai khoan trong may chu, may chu se tu dong da ban ra khoi he thong.");
     }
