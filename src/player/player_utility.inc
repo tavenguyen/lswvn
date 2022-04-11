@@ -24,3 +24,14 @@ stock Player_ClearChat(playerid) {
     } 
     return 1;
 }
+
+stock Player_SpawnOnSelCharacterArea(playerid) {
+    TogglePlayerSpectating(playerid, false);
+	SetSpawnInfo(playerid, 1, 0, 5.0, 5.0, 5.0, 0.0, 0, 0, 0, 0, 0, 0);
+	SpawnPlayer(playerid);
+	SetPlayerVirtualWorld(playerid, 0);
+	SetPlayerInterior(playerid, 0);
+	TogglePlayerControllable(playerid, true);
+	SetCameraBehindPlayer(playerid);
+    return 1;
+}
