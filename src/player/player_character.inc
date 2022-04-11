@@ -4,6 +4,18 @@
 
 #define player_account_included
 
+static Player_SpawnOnSelCharacterArea(playerid) {
+    TogglePlayerSpectating(playerid, false);
+	SetSpawnInfo(playerid, 0, 27, 1434.5022, -1231.0056, 152.3983, 0.0, 0, 0, 0, 0, 0, 0);
+	SpawnPlayer(playerid);
+    TogglePlayerControllable(playerid, false);
+	SetPlayerVirtualWorld(playerid, 0);
+	SetPlayerInterior(playerid, 0);
+    await SetCameraStyle(playerid);
+	TogglePlayerControllable(playerid, true);
+    return 1;
+}
+
 #include <YSI_Coding\y_hooks>
 hook OnGameModeInit() {
     mysql_query(MySQL_Connection(), 
