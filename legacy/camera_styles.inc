@@ -13,8 +13,7 @@ const MAX_CAMERA_ATTEMPS = 3;
 forward CameraOnStyleSet(playerid, Task:t);
 public CameraOnStyleSet(playerid, Task:t) {
     wait_ms(1000);
-    new 
-        Float:x, Float:y, Float:z, Float:old_z;
+    new Float:x, Float:y, Float:z;
 
     GetPlayerPos(playerid, x, y, z);
     z *= (MAX_CAMERA_ATTEMPS * 10.0);
