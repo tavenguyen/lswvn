@@ -34,6 +34,15 @@ stock Task:Character_Add(account_id, const name[], size = sizeof(name), age, gen
     return t;
 }
 
+stock Task:Character_GetSkin(account_id, character_id) {
+    new Task:t = task_new();
+    
+    new query[90 + 11 + 11 - 4 + 1];
+    mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT `skin` FROM character_stats WHERE `account_id` = %d AND `character_id` = %d LIMIT 1", account_id, character_id);
+    mysql_pquery(MySQL_Connection(), query, "Character_OnSkinGet", "d", _:t);
+    return t;
+}
+
 forward Character_OnSizeGet(Task:t);
 public Character_OnSizeGet(Task:t) {
     new count;
@@ -51,6 +60,14 @@ public Character_OnNameValid(Task:t) {
 forward Character_OnAdd(Task:t);
 public Character_OnAdd(Task:t) {
     task_set_result(t, cache_affected_rows());
+    return 1;
+}
+
+forward Character_OnSkinGet(Task:t);
+public Character_OnSkinGet(Task:t) {
+    new skinid;
+    cache_get_value_name_int(0, "skin", skinid);
+    task_set_result(t, skinid);
     return 1;
 }
 
