@@ -16,6 +16,11 @@
 #include <camera_styles>
 
 #include "ui/player_login_ui.inc"
+
 #include "player_utility.inc"
 #include "player_auth.inc"
-#include "player_character.inc"
+
+#include "character/character_stats.inc"
+
+#include "player_spawn_area.inc"
+
