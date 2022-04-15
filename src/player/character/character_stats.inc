@@ -13,11 +13,29 @@ stock Character_GetSize(account_id) {
     return t;
 }
 
+stock Task:Character_Add(account_id, const name[], size = sizeof(name), age, gender, skin) {
+    new Task:t = task_new();
+    task_unblock(1);
+
+    new character_size = await Character_GetSize(account_id),
+        query[300];
+    
+    mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO character_stats VALUES (%d, %d, '%e', %d, %d, %d)", account_id, character_size, name, age, gender, skin);
+    mysql_pquery(MySQL_Connection(), query, "Character_OnAdd", "d", _:t);
+    return t;
+}
+
 forward Character_OnSizeGet(Task:t);
 public Character_OnSizeGet(Task:t) {
     new count;
     cache_get_value_name_int(0, "res", count);
     task_set_result(t, count);
+    return 1;
+}
+
+forward Character_OnAdd(Task:t);
+public Character_OnAdd(Task:t) {
+    task_set_result(t, cache_affected_rows());
     return 1;
 }
 
