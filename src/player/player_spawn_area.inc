@@ -1,8 +1,8 @@
-#if defined player_account_included
+#if defined player_spawn_area_included
 	#endinput
 #endif
 
-#define player_account_included
+#define player_spawn_area_included
 
 #define         MAX_ACTORS_SPAWN_AREA                   3
 #define         ACTORS_SKIN_DEFAULT_CHARACTER           27
@@ -20,7 +20,7 @@ static ActorSpawners[][ActorSpawnerEnum] = {
     {1436.9015, -1230.9994, 152.3983, 356.9293}
 };
 
-new Map:m_playerActorList;
+static Map:m_playerActorList;
 
 stock Task:PlayerSpawnArea_ActorCreate(playerid) {
     if(!map_valid(m_playerActorList)) {
