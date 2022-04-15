@@ -9,7 +9,7 @@ stock Character_GetSize(account_id) {
 
     new query[86 + 11 - 2 + 1];
     mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT COUNT(character_id) AS res FROM character_stats WHERE `account_id` = %d LIMIT 1", account_id);
-    mysql_pquery(MySQL_Connection(), query, "Character_OnSizeGet", "d", _:t);
+    mysql_pquery(MySQL_Connection(), query, #Character_OnSizeGet, #d, _:t);
     return t;
 }
 
@@ -18,7 +18,7 @@ stock Task:Character_NameValid(const name[]) {
 
     new query[58 + MAX_PLAYER_NAME - 2 + 1];
     mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT name FROM character_stats WHERE name = '%e' LIMIT 1", name);
-    mysql_pquery(MySQL_Connection(), query, "Character_OnNameValid", "d", _:t);
+    mysql_pquery(MySQL_Connection(), query, #Character_OnNameValid, #d, _:t);
     return t;
 }
 
@@ -30,7 +30,7 @@ stock Task:Character_Add(account_id, const name[], size = sizeof(name), age, gen
         query[300];
     
     mysql_format(MySQL_Connection(), query, sizeof(query), "INSERT INTO character_stats VALUES (%d, %d, '%e', %d, %d, %d)", account_id, character_size, name, age, gender, skin);
-    mysql_pquery(MySQL_Connection(), query, "Character_OnAdd", "d", _:t);
+    mysql_pquery(MySQL_Connection(), query, #Character_OnAdd, #d, _:t);
     return t;
 }
 
@@ -39,7 +39,7 @@ stock Task:Character_GetSkin(account_id, character_id) {
     
     new query[90 + 11 + 11 - 4 + 1];
     mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT `skin` FROM character_stats WHERE `account_id` = %d AND `character_id` = %d LIMIT 1", account_id, character_id);
-    mysql_pquery(MySQL_Connection(), query, "Character_OnSkinGet", "d", _:t);
+    mysql_pquery(MySQL_Connection(), query, #Character_OnSkinGet, #d, _:t);
     return t;
 }
 
