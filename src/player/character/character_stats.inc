@@ -7,9 +7,18 @@
 stock Character_GetSize(account_id) {
     new Task:t = task_new();
 
-    new query[86 + 11 - 2];
+    new query[86 + 11 - 2 + 1];
     mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT COUNT(character_id) AS res FROM character_stats WHERE `account_id` = %d LIMIT 1", account_id);
     mysql_pquery(MySQL_Connection(), query, "Character_OnSizeGet", "d", _:t);
+    return t;
+}
+
+stock Task:Character_NameValid(const name[]) {
+    new Task:t = task_new();
+
+    new query[58 + MAX_PLAYER_NAME - 2 + 1];
+    mysql_format(MySQL_Connection(), query, sizeof(query), "SELECT name FROM character_stats WHERE name = '%e' LIMIT 1", name);
+    mysql_pquery(MySQL_Connection(), query, "Character_OnNameValid", "d", _:t);
     return t;
 }
 
@@ -30,6 +39,12 @@ public Character_OnSizeGet(Task:t) {
     new count;
     cache_get_value_name_int(0, "res", count);
     task_set_result(t, count);
+    return 1;
+}
+
+forward Character_OnNameValid(Task:t);
+public Character_OnNameValid(Task:t) {
+    task_set_result(t, cache_num_rows());
     return 1;
 }
 
