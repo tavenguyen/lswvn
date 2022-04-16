@@ -10,8 +10,7 @@
 
 static PlayerText:ScreenLoading[MAX_PLAYERS] = PlayerText:INVALID_PLAYER_TEXT_DRAW;
 
-stock Task:Screen_Loading(playerid, seconds = 20) {
-    new Task:t = task_new();
+stock Screen_Loading(playerid, seconds = 2) {
     if(ScreenLoading[playerid] == PlayerText:INVALID_PLAYER_TEXT_DRAW) {
         ScreenLoading[playerid] = CreatePlayerTextDraw(playerid, 0.8999, 1.3888, "Loading_Screen"); 
         PlayerTextDrawLetterSize(playerid, ScreenLoading[playerid], 0.0000, 49.2999);
@@ -25,18 +24,27 @@ stock Task:Screen_Loading(playerid, seconds = 20) {
         PlayerTextDrawSetProportional(playerid, ScreenLoading[playerid], 1);
         PlayerTextDrawSetShadow(playerid, ScreenLoading[playerid], 0);
         
-        for(new i = 254; i >= 0; i--) {
-            PlayerTextDrawBoxColor(playerid, ScreenLoading[playerid], i);
+        task_detach();
+        task_yield(1);
+        
+        PlayerTextDrawShow(playerid, ScreenLoading[playerid]);
+        if(seconds > 2) {
+            wait_ms(seconds*1000 - 2000);
+        }
+        
+        new value = 255;
+        for(new i = 8; i >= 0; i--) {
+            PlayerTextDrawBoxColor(playerid, ScreenLoading[playerid], value);
             PlayerTextDrawHide(playerid, ScreenLoading[playerid]);
             PlayerTextDrawShow(playerid, ScreenLoading[playerid]);
-            wait_ms(seconds);
+            wait_ms(250);
+            value = (value >> 1);
         }
 
         ScreenLoading_Destroy(playerid);
-        task_set_result(t, 1);
     }
 
-    return t;
+    return 1;
 }
 
 stock ScreenLoading_Destroy(playerid) {
