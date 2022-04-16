@@ -21,6 +21,13 @@ runtime:
     version: 0.3.DL-R1
     mode: server
     plugins:
+        - PawnPlus
+        - sscanf
+        - pawncmd
+        - streamer
+        - samp_bcrypt
+        - env
+        - mysql
     rcon_password: lswvn2021@#!@#!@#^%&HFGFGSG
     port: 7777
     hostname: Los Santos World Development
