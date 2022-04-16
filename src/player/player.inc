@@ -14,6 +14,7 @@
 
 // Legacy
 #include <camera_styles>
+#include <loading_screen>
 
 #include "ui/player_login_ui.inc"
 

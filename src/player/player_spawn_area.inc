@@ -72,12 +72,12 @@ stock PlayerSpawnArea_ActorDestroy(playerid) {
 static Player_SpawnOnSelCharacterArea(playerid) {
     TogglePlayerSpectating(playerid, false);
     PlayerSpawnArea_ActorCreate(playerid);
-	SetSpawnInfo(playerid, 0, 27, 1434.5022, -1231.0056, 152.3983, 0.0, 0, 0, 0, 0, 0, 0);
-    TogglePlayerControllable(playerid, false);
+	SetSpawnInfo(playerid, 0, 27, 0.0, 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0);
 	SpawnPlayer(playerid);
-	SetPlayerVirtualWorld(playerid, playerid);
-	SetPlayerInterior(playerid, playerid);
-	TogglePlayerControllable(playerid, true);
+    TogglePlayerControllable(playerid, false);
+    Screen_Loading(playerid, 4);
+	Streamer_UpdateEx(playerid, 1435.7620, -1228.3949, 152.4143, 0, 0, _, 0);
+    SetPlayerFacingAngle(playerid, 178.0979);
     return 1;
 }
 
