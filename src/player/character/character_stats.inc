@@ -43,6 +43,15 @@ stock Task:Character_GetSkin(account_id, character_id) {
     return t;
 }
 
+stock Task:Character_SetSkin(account_id, character_id, skinid) {
+    new Task:t = task_new();
+    
+    new query[90 + 11 + 11 - 4 + 1];
+    mysql_format(MySQL_Connection(), query, sizeof(query), "UPDATE character_stats SET skin = %d WHERE `account_id` = %d AND `character_id` = %d", skinid, account_id, character_id);
+    mysql_pquery(MySQL_Connection(), query, #Character_OnSkinSet, #d, _:t);
+    return t;
+}
+
 forward Character_OnSizeGet(Task:t);
 public Character_OnSizeGet(Task:t) {
     new count;
@@ -68,6 +77,12 @@ public Character_OnSkinGet(Task:t) {
     new skinid;
     cache_get_value_name_int(0, "skin", skinid);
     task_set_result(t, skinid);
+    return 1;
+}
+
+forward Character_OnSkinSet(Task:t);
+public Character_OnSkinSet(Task:t) {
+    task_set_result(t, cache_affected_rows());
     return 1;
 }
 
