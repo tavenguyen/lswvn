@@ -22,34 +22,39 @@ static ActorSpawners[][ActorSpawnerEnum] = {
 
 static Map:m_playerActorList;
 
-stock Task:PlayerSpawnArea_ActorCreate(playerid) {
+static enum {
+    actorInvalidCharacter = 0,
+    actorValidCharacter,
+}
+
+stock PlayerSpawnArea_ActorCreate(playerid) {
     if(!map_valid(m_playerActorList)) {
         m_playerActorList = map_new();
     }
 
     if(map_has_key(m_playerActorList, playerid)) {
-        return Task:0;
+        return 0;
     }
 
-    new Task:t = task_new(),
-        List:list = list_new(),
+    new List:list = list_new(),
         name[MAX_PLAYER_NAME];
 
-    task_unblock(1);
     GetPlayerName(playerid, name, sizeof(name));
     
     // 'i' as 'character_id' in Character_GetSKin function.
+    task_unblock(1);
     new account_id = await PlayerAuth_GetId(name);
     for(new i = 0; i < MAX_ACTORS_SPAWN_AREA; i++) {
         new skinid = await Character_GetSkin(account_id, i);
-        new actorid = CreateActor((skinid == 0 ? ACTORS_SKIN_DEFAULT_CHARACTER : skinid), ActorSpawners[i][x_actor], ActorSpawners[i][y_actor], ActorSpawners[i][z_actor], ActorSpawners[i][a_actor]);
-        
+        new actorid = CreateDynamicActor((skinid == 0 ? ACTORS_SKIN_DEFAULT_CHARACTER : skinid), ActorSpawners[i][x_actor], ActorSpawners[i][y_actor], ActorSpawners[i][z_actor], ActorSpawners[i][a_actor]);
+        Streamer_SetIntData(STREAMER_TYPE_ACTOR, actorid, E_STREAMER_EXTRA_ID, (skinid == 0 ? actorInvalidCharacter : actorValidCharacter));
+
         list_add(list, actorid);
         //printf("[debug] actorid: %d", actorid);
         map_set(m_playerActorList, playerid, list);
     }
 
-    return Task:t;
+    return 1;
 }
 
 stock PlayerSpawnArea_ActorDestroy(playerid) {
