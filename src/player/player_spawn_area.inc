@@ -66,7 +66,7 @@ stock PlayerSpawnArea_ActorDestroy(playerid) {
     if(map_get_safe(m_playerActorList, playerid, list)) {
         for(new i = 0, j = list_size(list); i < j; i++) {
             new actorid = list_get(list, i);
-            DestroyActor(actorid);
+            if(IsValidDynamicActor(actorid)) DestroyDynamicActor(actorid);
             //printf("[debug] actorid deleted: %d", actorid);
         }
     }
