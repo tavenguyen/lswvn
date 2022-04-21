@@ -146,6 +146,15 @@ hook OnPlayerDisconnect(playerid, reason) {
             m_playerActorList = Map:0;
         }
     }
+
+    if(map_valid(m_playerText3DList) && map_has_key(m_playerText3DList, playerid)) {
+        PlayerSpawnArea_TextDestroy(playerid);
+        map_remove(m_playerText3DList, playerid);
+        if(!map_size(m_playerText3DList)) {
+            map_delete(m_playerText3DList);
+            m_playerText3DList = Map:0;
+        }
+    }
     return 1;
 }
 
