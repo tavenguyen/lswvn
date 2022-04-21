@@ -82,7 +82,6 @@ stock PlayerSpawnArea_ActorDestroy(playerid) {
 stock PlayerSpawnArea_TextCreate(playerid) {
     // If you want to create DynamicText3D, you have to had DynamicActor firstly.
     if(!map_valid(m_playerActorList) || !map_has_key(m_playerActorList, playerid)) {
-        printf("call2");
         return 0;
     }
 
@@ -92,7 +91,6 @@ stock PlayerSpawnArea_TextCreate(playerid) {
 
     // End function if DynamicText had itself.
     if(map_has_key(m_playerText3DList, playerid)) {
-        printf("call");
         return 0;
     }
 
