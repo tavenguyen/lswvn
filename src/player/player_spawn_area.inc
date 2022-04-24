@@ -142,10 +142,12 @@ stock PlayerSpawnArea_TextDestroy(playerid) {
 
     new List:text_list = list_new();
     map_get_safe(m_playerText3DList, playerid, text_list);
-    for(new i = 0, j = list_size(text_list); i < j; i++) {
-        new index = list_get(text_list, i);
+    for(new i = 0, j = list_size(text_list), index = -1; i < j; i++) {
+        index = list_get(text_list, i);
+
+        if(index == -1) continue;
         if(IsValidDynamic3DTextLabel(Text3D:index)) {
-            DestroyDynamic3DTextLabel(Text3D:index)
+            DestroyDynamic3DTextLabel(Text3D:index);
         }
     }
     
