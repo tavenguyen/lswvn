@@ -54,7 +54,7 @@ stock Task:PlayerSpawnArea_ActorCreate(playerid) {
         Streamer_SetIntData(STREAMER_TYPE_ACTOR, actorid, E_STREAMER_EXTRA_ID, (skinid == 0 ? actorInvalidCharacter : actorValidCharacter));
 
         list_add(list, actorid);
-        printf("[debug] actorid: %d", actorid);
+        //printf("[debug] actorid: %d", actorid);
         map_set(m_playerActorList, playerid, list);
     }
     
@@ -102,7 +102,7 @@ stock PlayerSpawnArea_TextCreate(playerid) {
         if(IsValidDynamicActor(actorid)) {
             new Text3D:textid = CreateDynamic3DTextLabel(#character_selection_text, -1, ActorSpawners[index][x_actor], ActorSpawners[index][y_actor], ActorSpawners[index][z_actor] - 1.0, 5.0);
             list_add(text_list, _:textid);   
-            printf("size: %d", list_size(text_list));
+            //printf("size: %d", list_size(text_list));
 
             if(Streamer_GetIntData(STREAMER_TYPE_ACTOR, actorid, E_STREAMER_EXTRA_ID) == actorInvalidCharacter) {
                 printf("[debug] actorid: %d has not character index.", actorid);
