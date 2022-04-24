@@ -95,11 +95,15 @@ stock PlayerSpawnArea_TextCreate(playerid) {
     }
 
     new List:actors_list = list_new();
+    new List:text_list = list_new();
     map_get_safe(m_playerActorList, playerid, actors_list);
     for(new index = 0, actorid; index < MAX_ACTORS_SPAWN_AREA; index++) {
         actorid = list_get(actors_list, index);
         if(IsValidDynamicActor(actorid)) {
             new Text3D:textid = CreateDynamic3DTextLabel(#character_selection_text, -1, ActorSpawners[index][x_actor], ActorSpawners[index][y_actor], ActorSpawners[index][z_actor] - 1.0, 5.0);
+            list_add(text_list, _:textid);   
+            printf("size: %d", list_size(text_list));
+
             if(Streamer_GetIntData(STREAMER_TYPE_ACTOR, actorid, E_STREAMER_EXTRA_ID) == actorInvalidCharacter) {
                 printf("[debug] actorid: %d has not character index.", actorid);
                 UpdateDynamic3DTextLabelText(textid, -1, "Invalid character");
@@ -122,6 +126,37 @@ stock PlayerSpawnArea_TextCreate(playerid) {
         }
     }
 
+    map_set(m_playerText3DList, playerid, text_list);
+    return 1;
+}
+
+stock PlayerSpawnArea_TextDestroy(playerid) {
+    if(!map_valid(m_playerText3DList)) {
+        return 0;
+    }
+
+    // End function if DynamicText had itself.
+    if(!map_has_key(m_playerText3DList, playerid)) {
+        return 0;
+    }
+
+    new List:text_list = list_new();
+    map_get_safe(m_playerText3DList, playerid, text_list);
+    for(new i = 0, j = list_size(text_list); i < j; i++) {
+        new index = list_get(text_list, i);
+        if(IsValidDynamic3DTextLabel(Text3D:index)) {
+            DestroyDynamic3DTextLabel(Text3D:index)
+        }
+    }
+    
+    // Delete a list and frees its memory.
+    list_delete_deep(text_list);
+
+    map_remove(m_playerText3DList, playerid);
+    if(!map_size(m_playerText3DList)) {
+        map_delete(m_playerText3DList);
+        m_playerText3DList = Map:0;
+    }
     return 1;
 }
 
@@ -145,6 +180,7 @@ static Player_SpawnOnSelCharacterArea(playerid) {
 hook OnGameModeInit() {
     printf("[player/player_spawn_area] Loaded");
     m_playerActorList = map_new();
+    m_playerText3DList = map_new();
     return 1;
 }
 
@@ -160,11 +196,6 @@ hook OnPlayerDisconnect(playerid, reason) {
 
     if(map_valid(m_playerText3DList) && map_has_key(m_playerText3DList, playerid)) {
         PlayerSpawnArea_TextDestroy(playerid);
-        map_remove(m_playerText3DList, playerid);
-        if(!map_size(m_playerText3DList)) {
-            map_delete(m_playerText3DList);
-            m_playerText3DList = Map:0;
-        }
     }
     return 1;
 }
