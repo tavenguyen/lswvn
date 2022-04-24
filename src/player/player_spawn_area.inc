@@ -99,10 +99,23 @@ stock PlayerSpawnArea_TextCreate(playerid) {
     for(new index = 0, actorid; index < MAX_ACTORS_SPAWN_AREA; index++) {
         actorid = list_get(actors_list, index);
         if(IsValidDynamicActor(actorid)) {
+            new Text3D:textid = CreateDynamic3DTextLabel(#character_selection_text, -1, ActorSpawners[index][x_actor], ActorSpawners[index][y_actor], ActorSpawners[index][z_actor] - 1.0, 5.0);
             if(Streamer_GetIntData(STREAMER_TYPE_ACTOR, actorid, E_STREAMER_EXTRA_ID) == actorInvalidCharacter) {
                 printf("[debug] actorid: %d has not character index.", actorid);
+                UpdateDynamic3DTextLabelText(textid, -1, "Invalid character");
             } else if(Streamer_GetIntData(STREAMER_TYPE_ACTOR, actorid, E_STREAMER_EXTRA_ID) == actorValidCharacter) {
                 printf("[debug] actorid: %d has character index.", actorid);
+
+                new name[MAX_PLAYER_NAME];
+                GetPlayerName(playerid, name, sizeof name);
+                
+                task_unblock(1);
+                new account_id = await PlayerAuth_GetId(name);
+                new Task:t = Character_GetName(account_id, index);
+
+                task_wait(t);
+                task_get_result_arr(t, name);
+                UpdateDynamic3DTextLabelText(textid, -1, name);
             }
         } else {
             printf("[debug] invalid actorid: %d", actorid);
