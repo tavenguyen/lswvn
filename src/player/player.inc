@@ -26,3 +26,14 @@
 
 #include "player_spawn_area.inc"
 
+#include <YSI_Coding\y_hooks>
+hook OnPlayerKeyStateChange(playerid, newkeys, oldkeys) {
+	new actorid = GetPlayerTargetDynamicActor(playerid);
+	if(IsValidDynamicActor(actorid)) {
+		if(newkeys & KEY_YES) {
+			CallLocalFunction(#ActorTargeted_ShowMenu, #ii, playerid, actorid);
+			return Y_HOOKS_BREAK_RETURN_1;
+		}
+	}
+    return 1;
+}
