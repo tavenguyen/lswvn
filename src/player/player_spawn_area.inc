@@ -24,7 +24,7 @@ static
     Map:m_playerActorList,
     Map:m_playerText3DList;
 
-static enum _:eActorStatus {
+static enum {
     actorInvalidCharacter = 0,
     actorValidCharacter,
 }
@@ -198,6 +198,23 @@ hook OnPlayerDisconnect(playerid, reason) {
 
     if(map_valid(m_playerText3DList) && map_has_key(m_playerText3DList, playerid)) {
         PlayerSpawnArea_TextDestroy(playerid);
+    }
+    return 1;
+}
+
+hook ActorTargeted_ShowMenu(playerid, actorid) {
+    if(map_valid(m_playerActorList) && map_has_key(m_playerActorList, playerid)) {
+        new List:l_actors = list_new();
+        map_get_safe(m_playerActorList, playerid, l_actors);
+        if(list_find(l_actors, actorid) != -1) {
+            if(Streamer_GetIntData(STREAMER_TYPE_ACTOR, actorid, E_STREAMER_EXTRA_ID) == actorInvalidCharacter) {
+                Dialog_Show(playerid, CharacterCreationDialog, DIALOG_STYLE_LIST, "Character Selection", "Tao nhan vat...", "Accept", "Close");
+            }
+
+            if(Streamer_GetIntData(STREAMER_TYPE_ACTOR, actorid, E_STREAMER_EXTRA_ID) == actorValidCharacter) {
+                SendClientMessage(playerid, -1, "dang nhap di");
+            }
+        }
     }
     return 1;
 }
