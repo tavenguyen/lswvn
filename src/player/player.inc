@@ -11,6 +11,7 @@
 #include <easyDialog>
 #include <samp_bcrypt>
 #include <zmessage>
+#include <YSI_Coding\y_unique>
 
 // Legacy
 #include <camera_styles>
